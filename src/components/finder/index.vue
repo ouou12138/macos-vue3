@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import StatusBar from '../statusbar/StatusBar.vue'
+import StatusBar from '../statusbar/statusbar.vue'
 import Dock from '../dock/dock.vue'
 import DesktopVue from './desktop.vue'
 import BgImage from '@/assets/background/light.jpg'
