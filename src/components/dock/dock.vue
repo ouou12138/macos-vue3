@@ -38,6 +38,9 @@ function runApp(app: AppInfo) {
     app.render()
     return
   }
+  if (window.isShowLaunchpad.value) {
+    window.switchLaunchpad()
+  }
   useRunApp(app.key)
 }
 </script>
@@ -81,7 +84,7 @@ function runApp(app: AppInfo) {
   display: flex;
   align-items: center;
   transition: all var(--transition-time);
-  z-index: 1999;
+  z-index: 2001;
   --scale: 1;
   --icon-base-size: 50px;
 

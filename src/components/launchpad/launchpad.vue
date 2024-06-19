@@ -75,10 +75,6 @@ async function switchLaunchpad() {
       })()
 }
 function runApp(app: AppInfo) {
-  // if (!app.runningId) throw new Error('app not running')
-  // const instance = useRunningApp(app.runningId)
-  // console.log(instance, 'instance')
-  // instance.exposed.switchLaunchpad()
   if (app.render) {
     app.render()
     return
@@ -87,6 +83,7 @@ function runApp(app: AppInfo) {
 }
 
 window.switchLaunchpad = switchLaunchpad
+window.isShowLaunchpad = show
 
 defineExpose({
   switchLaunchpad
@@ -96,7 +93,7 @@ defineExpose({
 <style lang="scss" scoped>
 .launchpad {
   position: absolute;
-  z-index: 1999;
+  z-index: 2001;
   top: 0;
   left: 0;
   width: 100vw;
