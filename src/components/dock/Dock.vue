@@ -2,7 +2,7 @@
 import { hoverDockItem, hoverDockItemLeave } from './hover'
 import { useDockStore } from './DockStore'
 import { type AppInfo } from '@/data/apps'
-import { useRunningApp } from '@/hook/useRunningApp'
+import { runApp as useRunApp } from '@/hook/useRunApp'
 
 const dockApp = useDockStore()
 
@@ -30,10 +30,15 @@ function shouldShowMenuItem(menu: any): boolean {
 }
 
 function runApp(app: AppInfo) {
-  if (!app.runningId) throw new Error('app not running')
-  const instance = useRunningApp(app.runningId)
-  console.log(instance, 'instance')
-  instance.exposed.switchLaunchpad()
+  // if (!app.runningId) throw new Error('app not running')
+  // const instance = useRunningApp(app.runningId)
+  // console.log(instance, 'instance')
+  // instance.exposed.switchLaunchpad()
+  if (app.render) {
+    app.render()
+    return
+  }
+  useRunApp(app.key)
 }
 </script>
 

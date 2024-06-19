@@ -1,6 +1,6 @@
 <template>
-  <div class="launchpad" v-show="show">
-    <div class="animate-container w-full h-full">
+  <div class="launchpad" v-show="show" :class="animateName" @click="switchLaunchpad">
+    <div class="animate-container w-full h-full" :class="animateName">
       <swiper
         class="w-full h-full"
         :slides-per-view="1"
@@ -11,8 +11,15 @@
         <swiper-slide v-for="(list, index) in appsList" :key="index">
           <div class="w-full h-full flex items-center justify-center">
             <div class="app-copntianer">
-              <div class="app-item flex-shrink-0" v-for="app in list" :key="app.appId">
-                <img class="w-full object-cover" :src="app.icon" alt="" />
+              <div
+                class="app-item flex-shrink-0"
+                v-for="app in list"
+                :key="app.appId"
+                @click="runApp(app)"
+              >
+                <div class="logo">
+                  <img class="w-full object-cover" :src="app.icon" alt="" />
+                </div>
                 <div class="text-white text-3">{{ app.name }}</div>
               </div>
             </div>
@@ -24,36 +31,24 @@
 </template>
 
 <script setup lang="ts">
-import apps from '@/data/apps'
-import { useRunningApp } from '@/hook/useRunningApp'
-import { useDesktopStore } from '../finder/desktopStore'
+import apps, { type AppInfo } from '@/data/apps'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
+import { runApp as useRunApp } from '@/hook/useRunApp'
 import 'swiper/css'
 import 'swiper/css/pagination'
-import 'animate.css'
-import { nanoid } from 'nanoid'
-
-const APP_KEY = 'launchpad'
-
-const appInfo = apps.find((app) => app.key === APP_KEY)
-if (!appInfo) throw new Error('app not found')
 
 const props = defineProps<{
   bg: string
 }>()
 const { bg: bgImage } = toRefs(props)
-const { desktopInfo } = storeToRefs(useDesktopStore())
 const show = ref(false)
 const newApps: typeof apps = []
 newApps.push(...apps, ...apps, ...apps, ...apps)
 
 const appsList = clipAppsPages(newApps)
 
-// const appWidth = computed(() => {
-//   return Number(((desktopInfo.value.width * 0.7) / 7).toFixed(0))
-// })
-// const dockHeight = ref(desktopInfo.value.dockHeight)
+const animateName = ref('fadeIn')
 
 function clipAppsPages(aList: typeof apps) {
   const res: (typeof apps)[] = []
@@ -66,20 +61,36 @@ function clipAppsPages(aList: typeof apps) {
   }
   return res
 }
-function switchLaunchpad() {
-  show.value = show.value ? false : true
+async function switchLaunchpad() {
+  show.value = !show.value
+    ? (() => {
+        animateName.value = 'fadeIn'
+        return true
+      })()
+    : await (() => {
+        return new Promise((resolve) => {
+          animateName.value = 'fadeOut'
+          setTimeout(() => resolve(false), 200)
+        })
+      })()
 }
+function runApp(app: AppInfo) {
+  // if (!app.runningId) throw new Error('app not running')
+  // const instance = useRunningApp(app.runningId)
+  // console.log(instance, 'instance')
+  // instance.exposed.switchLaunchpad()
+  if (app.render) {
+    app.render()
+    return
+  }
+  useRunApp(app.key)
+}
+
+window.switchLaunchpad = switchLaunchpad
 
 defineExpose({
   switchLaunchpad
 })
-
-const runningId = nanoid()
-
-const instance = getCurrentInstance()
-
-useRunningApp(runningId, instance)
-appInfo.runningId = runningId
 </script>
 
 <style lang="scss" scoped>
@@ -107,6 +118,14 @@ appInfo.runningId = runningId
     height: 100%;
     background-color: rgba($color: black, $alpha: 0.5);
   }
+  &.fadeIn {
+    animation: fadeIn 200ms;
+    animation-fill-mode: forwards;
+  }
+  &.fadeOut {
+    animation: fadeOut 200ms;
+    animation-fill-mode: forwards;
+  }
 }
 .app-copntianer {
   display: grid;
@@ -123,14 +142,39 @@ appInfo.runningId = runningId
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+    .logo {
+      display: block;
+      position: relative;
+      width: 100%;
+    }
+    &:active {
+      .logo::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 9%;
+        left: 9%;
+        right: 9%;
+        bottom: 11%;
+        background-color: rgba($color: black, $alpha: 0.5);
+        border-radius: 20%;
+      }
+    }
   }
 }
 .animate-container {
   transform: scale(1.5);
   opacity: 0;
+  animation-timing-function: ease-in;
+}
+.animate-container.fadeOut {
+  animation: FadeZoomOut 200ms;
+  animation-fill-mode: forwards;
+}
+.animate-container.fadeIn {
   animation: FadeZoomIn 200ms;
   animation-fill-mode: forwards;
-  animation-timing-function: ease-in;
 }
 @keyframes FadeZoomIn {
   0% {
@@ -140,6 +184,32 @@ appInfo.runningId = runningId
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+@keyframes FadeZoomOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
-import '@/assets/app_icons/accessibility-inspector-2023-05-22.png'
-const appIcons = import.meta.glob<true, string, any>('@/assets/app_icons/*', {
+import '../assets/app_icons/accessibility-inspector-2023-05-22.png'
+const appIcons = import.meta.glob<true, string, any>('../assets/app_icons/*', {
   eager: true
 })
 
@@ -27,8 +27,9 @@ export type AppInfo = {
   key: string
   icon: string
   appId: string
-  runningId?: string
   menus: MenuItem[]
+  component_path?: string
+  render?: Function
 }
 
 const apps: AppInfo[] = [
@@ -37,6 +38,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['finder'],
     key: 'finder',
     appId: nanoid(16),
+    component_path: '../components/finder/index.vue',
     menus: []
   },
   {
@@ -44,6 +46,9 @@ const apps: AppInfo[] = [
     icon: iconsLinks['launchpad'],
     key: 'launchpad',
     appId: nanoid(16),
+    render: () => {
+      ;(window as any).switchLaunchpad()
+    },
     menus: []
   },
   {
@@ -51,6 +56,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['calculator'],
     key: 'calculator',
     appId: nanoid(16),
+    component_path: '../components/calculator/index.vue',
     menus: []
   },
   {
@@ -58,6 +64,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['safari'],
     key: 'safari',
     appId: nanoid(16),
+    component_path: '../components/safari/index.vue',
     menus: []
   },
   {
@@ -65,6 +72,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['terminal'],
     key: 'terminal',
     appId: nanoid(16),
+    component_path: '../components/terminal/index.vue',
     menus: []
   },
   {
@@ -72,6 +80,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['home'],
     key: 'home',
     appId: nanoid(16),
+    component_path: '../components/home/index.vue',
     menus: []
   },
   {
@@ -79,6 +88,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['siri'],
     key: 'siri',
     appId: nanoid(16),
+    component_path: '../components/siri/index.vue',
     menus: []
   },
   {
@@ -86,6 +96,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['system-preferences'],
     key: 'system-preferences',
     appId: nanoid(16),
+    component_path: '../components/system-preferences/index.vue',
     menus: []
   },
   {
@@ -93,6 +104,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['reminders'],
     key: 'reminders',
     appId: nanoid(16),
+    component_path: '../components/reminders/index.vue',
     menus: []
   },
   {
@@ -100,6 +112,7 @@ const apps: AppInfo[] = [
     icon: iconsLinks['stickies'],
     key: 'stickies',
     appId: nanoid(16),
+    component_path: '../components/stickies/index.vue',
     menus: []
   }
 ]

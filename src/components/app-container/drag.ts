@@ -114,7 +114,7 @@ class Drag {
     transform: `translate(${this.windowInfo.x}px,${this.windowInfo.y}px)`,
     width: this.windowInfo.w + 'px',
     height: this.windowInfo.h + 'px',
-    transition: this.fullScreen ? 'all 300ms line' : 'none'
+    transition: this.fullScreen ? 'all 800ms line' : 'none'
   }))
 
   public isDraging = ref(false)
@@ -363,9 +363,9 @@ class Drag {
       windowPosition.right = 0
       windowPosition.bottom = 0
     }
-    setTimeout(() => {
-      this.fullScreen = false
-    }, 300)
+    // setTimeout(() => {
+    //   this.fullScreen = false
+    // }, 300)
   }
   public maximalWindow() {
     const {

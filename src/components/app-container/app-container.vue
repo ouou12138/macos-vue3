@@ -1,5 +1,11 @@
 <template>
-  <div v-if="showApp" class="app" :style="{ ...drag.moveResult.value }">
+  <div
+    class="app"
+    :class="{ active: props.active }"
+    v-show="hide"
+    :style="{ ...drag.moveResult.value }"
+    @click="clickApp"
+  >
     <div class="app-container" style="{'user-select':'none'}">
       <span
         v-for="dire in drag.Directions"
@@ -10,8 +16,8 @@
       <div class="nav-bar" @mousedown="drag.dragMove($event)" @dblclick.stop="drag.dbclickResize">
         <div class="control-container">
           <div class="controller close" @click.stop="closeApp"></div>
-          <div class="controller minimize"></div>
-          <div class="controller maximize" @click.stop="drag.dbclickResize"></div>
+          <div class="controller minimize" @click.stop="minimizeApp"></div>
+          <div class="controller maximize" @click.stop="maximizeApp"></div>
         </div>
         <div class="title-container" ref="titleContainerElement">
           <slot name="nav-bar">
@@ -31,6 +37,7 @@
 </template>
 
 <script lang="ts" setup>
+import { getQueue, setQueue, removeQueue, setActiveApp } from '@/hook/useRunApp'
 import Drag from './drag'
 
 type SizeLimition = {
@@ -40,11 +47,15 @@ type SizeLimition = {
 
 const props = withDefaults(
   defineProps<{
+    active?: boolean
+    runningId?: string
+    appId?: string
     appName?: string
     minSize?: SizeLimition
     maxSize?: SizeLimition
   }>(),
   {
+    active: false,
     minSize: () => ({
       width: 0,
       height: 0
@@ -56,7 +67,12 @@ const props = withDefaults(
   }
 )
 
-console.log(props.maxSize, 'props')
+const runningApp = getQueue(props.appId!)!
+
+provide('isActive', props.active)
+provide('closeApp', closeApp)
+provide('minimizeApp', minimizeApp)
+provide('maximizeApp', maximizeApp)
 
 const limits = computed(() => ({
   minWidth: props.minSize.width ?? 0,
@@ -69,13 +85,25 @@ const limits = computed(() => ({
 let titleContainerElement = ref<HTMLElement | null>(null)
 let titleContainerHeight = ref(0)
 
-let showApp = ref(true)
+const hide = ref(true)
 
 //constant
 let appTitleContainerHeight = 25
 
 function closeApp() {
-  showApp.value = false
+  removeQueue(props.appId!)
+}
+
+function minimizeApp() {
+  hide.value = !hide.value
+}
+
+function maximizeApp() {
+  drag.dbclickResize()
+}
+
+function clickApp() {
+  setActiveApp(props.runningId!)
 }
 
 function getTitleContainerHeight() {
@@ -88,9 +116,18 @@ let drag: Drag = new Drag({
   titleContainerHeight: titleContainerHeight.value
 })
 
+defineExpose({
+  minimizeApp,
+  closeApp,
+  maximizeApp
+})
+
 onMounted(() => {
   getTitleContainerHeight()
   drag.setLimits({ titleContainerHeight: titleContainerHeight.value })
+
+  runningApp.wrapper = getCurrentInstance() as any
+  setQueue(props.appId!, runningApp)
 })
 </script>
 
@@ -110,6 +147,27 @@ onMounted(() => {
     background-color: rgba($color: white, $alpha: 0.6);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+  }
+}
+
+.app.active {
+  z-index: 2000;
+  .controller {
+    &::after {
+      visibility: visible !important;
+    }
+
+    &.close {
+      background-color: rgb(249, 69, 69);
+    }
+
+    &.minimize {
+      background-color: rgb(252, 175, 36);
+    }
+
+    &.maximize {
+      background-color: rgb(40, 162, 49);
+    }
   }
 }
 
