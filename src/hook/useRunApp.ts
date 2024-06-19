@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import apps from '@/data/apps'
-import Desktop from '@/components/finder/Desktop.vue'
+import Desktop from '@/components/finder/desktop.vue'
 import appContainer from '@/components/app-container/app-container.vue'
 import { render, type VNode } from 'vue'
 
