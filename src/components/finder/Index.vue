@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import StatusBar from '../statusbar/statusbar.vue'
 import Dock from '../dock/dock.vue'
-import DesktopVue from './desktop.vue'
+import DesktopVue from './Desktop.vue'
 import BgImage from '@/assets/background/light.jpg'
 import Launchpad from '../launchpad/launchpad.vue'
 import { activeApp, initDesktop } from '@/hook/useRunApp'
