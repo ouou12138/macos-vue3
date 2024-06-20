@@ -47,7 +47,7 @@ export const runApp = async <T = Record<string, any>>(APP_KEY: string, props?: T
   }
   const runningId = nanoid(16)
   if (!appDefine.component_path) throw new Error('app component not found')
-  const appComp = defineAsyncComponent(() => import(/* @vite-ignore */ appDefine.component_path!))
+  const appComp = defineAsyncComponent(() => import(`../components/${appDefine.key}/index.vue`))
   const appWrapper = h(
     appContainer,
     {
