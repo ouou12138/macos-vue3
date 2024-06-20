@@ -1,6 +1,7 @@
 # macos-vue3
 
 a fake macos web project
+[preview url](https://ouou12138.github.io/macos-vue3)
 
 ## Customize configuration
 
