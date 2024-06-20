@@ -30,16 +30,12 @@ function shouldShowMenuItem(menu: any): boolean {
 }
 
 function runApp(app: AppInfo) {
-  // if (!app.runningId) throw new Error('app not running')
-  // const instance = useRunningApp(app.runningId)
-  // console.log(instance, 'instance')
-  // instance.exposed.switchLaunchpad()
+  if (window.isShowLaunchpad.value) {
+    window.switchLaunchpad()
+  }
   if (app.render) {
     app.render()
     return
-  }
-  if (window.isShowLaunchpad.value) {
-    window.switchLaunchpad()
   }
   useRunApp(app.key)
 }

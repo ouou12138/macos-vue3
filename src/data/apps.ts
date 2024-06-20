@@ -22,6 +22,11 @@ export interface MenuItem {
   [propname: string]: any
 }
 
+type SizeLimition = {
+  width: number
+  height: number
+}
+
 export type AppInfo = {
   name: string
   key: string
@@ -30,6 +35,11 @@ export type AppInfo = {
   menus: MenuItem[]
   component_path?: string
   render?: Function
+  window_config?: {
+    minSize?: SizeLimition
+    maxSize?: SizeLimition
+    showNav?: boolean
+  }
 }
 
 const apps: AppInfo[] = [
@@ -57,7 +67,18 @@ const apps: AppInfo[] = [
     key: 'calculator',
     appId: nanoid(16),
     component_path: '../components/calculator/index.vue',
-    menus: []
+    menus: [],
+    window_config: {
+      minSize: {
+        width: 230,
+        height: 325
+      },
+      maxSize: {
+        width: 230,
+        height: 325
+      },
+      showNav: false
+    }
   },
   {
     name: 'Safari 浏览器',

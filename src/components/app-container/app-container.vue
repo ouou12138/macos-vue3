@@ -13,7 +13,12 @@
         :class="['resize-hanlder', 'resize-' + dire]"
         @mousedown="drag.dragResize($event, dire)"
       ></span>
-      <div class="nav-bar" @mousedown="drag.dragMove($event)" @dblclick.stop="drag.dbclickResize">
+      <div
+        class="nav-bar"
+        v-show="props.showNav"
+        @mousedown="drag.dragMove($event)"
+        @dblclick.stop="drag.dbclickResize"
+      >
         <div class="control-container">
           <div class="controller close" @click.stop="closeApp"></div>
           <div class="controller minimize" @click.stop="minimizeApp"></div>
@@ -29,7 +34,16 @@
         class="absolute top-1px left-1px right-1px bottom-1px"
         v-show="drag.isResizing.value || drag.isDraging.value"
       ></div>
-      <div class="sub-app" :style="{ height: drag.windowInfo.h - appTitleContainerHeight + 'px' }">
+      <div
+        class="sub-app"
+        :style="{ height: appContentHeight + 'px' }"
+        @mousedown="drag.dragMove($event)"
+      >
+        <div class="control-container" v-if="!props.showNav">
+          <div class="controller close" @click.stop="closeApp"></div>
+          <div class="controller minimize" @click.stop="minimizeApp"></div>
+          <div class="controller maximize" @click.stop="maximizeApp"></div>
+        </div>
         <slot></slot>
       </div>
     </div>
@@ -47,6 +61,7 @@ type SizeLimition = {
 
 const props = withDefaults(
   defineProps<{
+    showNav?: boolean
     active?: boolean
     runningId?: string
     appId?: string
@@ -55,6 +70,7 @@ const props = withDefaults(
     maxSize?: SizeLimition
   }>(),
   {
+    showNav: true,
     active: false,
     minSize: () => ({
       width: 0,
@@ -66,6 +82,12 @@ const props = withDefaults(
     })
   }
 )
+
+const appContentHeight = computed(() => {
+  console.log(!props.showNav)
+
+  return !props.showNav ? drag.windowInfo.h : drag.windowInfo.h - titleContainerHeight.value
+})
 
 const runningApp = getQueue(props.appId!)!
 
@@ -82,13 +104,10 @@ const limits = computed(() => ({
 }))
 
 // rective data
-let titleContainerElement = ref<HTMLElement | null>(null)
-let titleContainerHeight = ref(0)
+const titleContainerElement = ref<HTMLElement | null>(null)
+const titleContainerHeight = ref(0)
 
 const hide = ref(true)
-
-//constant
-let appTitleContainerHeight = 25
 
 function closeApp() {
   removeQueue(props.appId!)
@@ -111,7 +130,7 @@ function getTitleContainerHeight() {
   titleContainerHeight.value = parseInt(style.height)
 }
 
-let drag: Drag = new Drag({
+const drag: Drag = new Drag({
   resizeLimit: limits.value,
   titleContainerHeight: titleContainerHeight.value
 })
@@ -123,8 +142,10 @@ defineExpose({
 })
 
 onMounted(() => {
-  getTitleContainerHeight()
-  drag.setLimits({ titleContainerHeight: titleContainerHeight.value })
+  if (props.showNav) {
+    getTitleContainerHeight()
+    drag.setLimits({ titleContainerHeight: titleContainerHeight.value })
+  }
 
   runningApp.wrapper = getCurrentInstance() as any
   setQueue(props.appId!, runningApp)
@@ -138,12 +159,14 @@ onMounted(() => {
   border-radius: 10px;
   overflow: hidden;
   position: fixed;
+  box-shadow: 10px 10px 20px -5px rgba($color: #000, $alpha: 0.4);
+  border: 1px solid rgba($color: #000, $alpha: 0.4);
 
   .app-container {
     width: 100%;
     height: 100%;
     border-radius: 10px;
-    overflow: hidden;
+    // overflow: hidden;
     background-color: rgba($color: white, $alpha: 0.6);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -152,6 +175,7 @@ onMounted(() => {
 
 .app.active {
   z-index: 2000;
+  box-shadow: 5px 20px 40px -5px rgba($color: #000, $alpha: 0.7);
   .controller {
     &::after {
       visibility: visible !important;
@@ -178,76 +202,6 @@ onMounted(() => {
   display: flex;
   user-select: none;
 
-  .control-container {
-    height: inherit;
-    min-height: inherit;
-    width: 80px;
-    flex-shrink: 0;
-    flex-grow: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-
-    &:hover {
-      .controller {
-        &::after {
-          visibility: visible !important;
-        }
-
-        &.close {
-          background-color: rgb(249, 69, 69);
-        }
-
-        &.minimize {
-          background-color: rgb(252, 175, 36);
-        }
-
-        &.maximize {
-          background-color: rgb(40, 162, 49);
-        }
-      }
-    }
-
-    .controller {
-      width: 14px;
-      height: 14px;
-      border-radius: 14px;
-      position: relative;
-      text-align: center;
-      background-color: #bbb;
-      color: #666;
-      transition: all 75ms;
-
-      &::after {
-        font-family: iconfont;
-        position: absolute;
-        left: 0;
-        font-size: 14px;
-        text-align: center;
-        visibility: hidden;
-      }
-
-      &.close {
-        &::after {
-          content: '\e8dd';
-        }
-      }
-
-      &.minimize {
-        &::after {
-          content: '\e97f';
-        }
-      }
-
-      &.maximize {
-        &::after {
-          content: '\e8e6';
-          transform: rotateZ(45deg);
-        }
-      }
-    }
-  }
-
   .title-container {
     flex: 1;
     width: 100%;
@@ -265,9 +219,81 @@ onMounted(() => {
   }
 }
 
+.control-container {
+  height: inherit;
+  min-height: inherit;
+  width: 80px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  &:hover {
+    .controller {
+      &::after {
+        visibility: visible !important;
+      }
+
+      &.close {
+        background-color: rgb(249, 69, 69);
+        &::after {
+          content: '\e8dd';
+        }
+      }
+
+      &.minimize {
+        background-color: rgb(252, 175, 36);
+        &::after {
+          content: '\e97f';
+        }
+      }
+
+      &.maximize {
+        background-color: rgb(40, 162, 49);
+        &::after {
+          content: '\e8e6';
+          transform: rotateZ(45deg);
+        }
+      }
+    }
+  }
+
+  .controller {
+    --controller-size: 12px;
+    width: var(--controller-size);
+    height: var(--controller-size);
+    border-radius: var(--controller-size);
+    position: relative;
+    text-align: center;
+    background-color: #bbb;
+    color: #666;
+    transition: all 75ms;
+
+    &::after {
+      font-family: iconfont;
+      position: absolute;
+      left: 0;
+      font-size: 14px;
+      text-align: center;
+      visibility: hidden;
+    }
+  }
+}
+
 .sub-app {
   width: 100%;
   height: max-content;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  .control-container {
+    position: absolute;
+    height: fit-content;
+    padding: 10px 0;
+    top: 0;
+    left: 0;
+  }
 }
 
 .resize-hanlder {
@@ -275,6 +301,7 @@ onMounted(() => {
   width: 10px;
   height: 10px;
   position: absolute;
+  z-index: 10;
 }
 
 .resize-tl {

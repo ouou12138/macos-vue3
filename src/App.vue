@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Desktop from '@/components/finder/index.vue'
+import Desktop from '@/components/desktop/index.vue'
 </script>
 
 <template>

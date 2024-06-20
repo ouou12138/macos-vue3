@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import apps from '@/data/apps'
-import Desktop from '@/components/finder/desktop.vue'
+import Desktop from '@/components/desktop/desktop.vue'
 import appContainer from '@/components/app-container/app-container.vue'
 import { render, type VNode } from 'vue'
 
@@ -50,8 +50,14 @@ export const runApp = async <T = Record<string, any>>(APP_KEY: string, props?: T
   const appComp = defineAsyncComponent(() => import(/* @vite-ignore */ appDefine.component_path!))
   const appWrapper = h(
     appContainer,
-    { key: runningId, runningId, appId: appDefine.appId, appName: appDefine.name },
-    h(appComp)
+    {
+      key: runningId,
+      runningId,
+      appId: appDefine.appId,
+      appName: appDefine.name,
+      ...(appDefine.window_config || {})
+    },
+    h(appComp, props || {})
   )
 
   setQueue(appDefine.appId, { runningId, vnode: appWrapper })

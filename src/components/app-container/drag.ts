@@ -1,5 +1,5 @@
 import { ref, reactive, computed } from 'vue'
-import { useDesktopStore } from '../finder/desktopStore'
+import { useDesktopStore } from '../desktop/desktopStore'
 
 type ResizeLimit = {
   minWidth: number
@@ -133,18 +133,7 @@ class Drag {
       this.resizeLimit.maxHeight = this.desktopArea.height
     })
 
-    if (params?.resizeLimit) {
-      const resizeLimit = this.resizeLimit
-      const paramsResizeLimit = params.resizeLimit
-      resizeLimit.maxWidth <= 0
-        ? (resizeLimit.maxWidth = this.desktopArea.width)
-        : paramsResizeLimit.maxWidth
-      resizeLimit.maxHeight <= 0
-        ? (resizeLimit.maxHeight = this.desktopArea.height)
-        : paramsResizeLimit.maxHeight
-      paramsResizeLimit.minWidth && (resizeLimit.minWidth = paramsResizeLimit.minWidth)
-      paramsResizeLimit.minHeight && (resizeLimit.minHeight = paramsResizeLimit.minHeight)
-    }
+    this.initResizeLimit(params?.resizeLimit)
 
     this.titleContainerHeight = params?.titleContainerHeight || 0
 
@@ -156,6 +145,27 @@ class Drag {
     this.windowPosition.bottom = winHeight - this.windowInfo.y - this.resizeLimit.minHeight
 
     this.calcResizeLimit()
+    this.initWindowInfo()
+  }
+
+  private initResizeLimit(paramsResizeLimit?: ResizeLimit | undefined) {
+    if (!paramsResizeLimit) return
+    const resizeLimit = this.resizeLimit
+    resizeLimit.maxWidth =
+      paramsResizeLimit.maxWidth <= 0 ? this.desktopArea.width : paramsResizeLimit.maxWidth
+    resizeLimit.maxHeight =
+      paramsResizeLimit.maxHeight <= 0 ? this.desktopArea.height : paramsResizeLimit.maxHeight
+    paramsResizeLimit.minWidth && (resizeLimit.minWidth = paramsResizeLimit.minWidth)
+    paramsResizeLimit.minHeight && (resizeLimit.minHeight = paramsResizeLimit.minHeight)
+    console.log(this.desktopArea)
+    console.log(resizeLimit)
+  }
+
+  private initWindowInfo() {
+    this.windowInfo.x = this.defaultPosition.x
+    this.windowInfo.y = this.defaultPosition.y
+    this.windowInfo.w = this.resizeLimit.minWidth
+    this.windowInfo.h = this.resizeLimit.minHeight
   }
 
   public addEvent(
