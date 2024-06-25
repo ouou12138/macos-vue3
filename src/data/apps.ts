@@ -49,7 +49,14 @@ const apps: AppInfo[] = [
     key: 'finder',
     appId: nanoid(16),
     component_path: '../components/finder/index.vue',
-    menus: []
+    menus: [],
+    window_config: {
+      minSize: {
+        width: 800,
+        height: 400
+      },
+      showNav: false
+    }
   },
   {
     name: '启动台',

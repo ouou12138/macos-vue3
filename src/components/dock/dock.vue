@@ -2,7 +2,7 @@
 import { hoverDockItem, hoverDockItemLeave } from './hover'
 import { useDockStore } from './DockStore'
 import { type AppInfo } from '@/data/apps'
-import { runApp as useRunApp } from '@/hook/useRunApp'
+import { runApp as useRunApp, runningQueue } from '@/hook/useRunApp'
 
 const dockApp = useDockStore()
 
@@ -55,6 +55,10 @@ function runApp(app: AppInfo) {
     >
       <div class="logo">
         <img class="w-full h-full" :src="item.icon" alt="icons" />
+        <p
+          class="running-dot m-0 w-5px h-5px rounded absolute left-50% translate-x--50% pointer-events-none"
+          v-show="runningQueue.has(item.appId)"
+        ></p>
       </div>
       <div class="app-name" v-show="!dockApp.showMenu">{{ item.name }}</div>
     </div>
@@ -70,7 +74,7 @@ function runApp(app: AppInfo) {
 
 <style lang="scss" scoped>
 .dock {
-  --transition-time: 120ms;
+  --transition-time: 80ms;
   position: relative;
   height: 60px;
   max-width: 96vw;
@@ -87,11 +91,11 @@ function runApp(app: AppInfo) {
   .dock-item {
     width: calc(var(--icon-base-size) * var(--scale));
     height: calc(var(--icon-base-size) * var(--scale));
-    transition: all 15ms;
+    transition: all var(--transition-time);
     padding: 10px 5px;
     flex-shrink: 0;
     position: relative;
-    transform: all var(--transition-time);
+    transform-origin: bottom;
 
     .logo {
       border-radius: 6px;
@@ -101,6 +105,7 @@ function runApp(app: AppInfo) {
       pointer-events: none;
       transform: translateY(calc(40px * calc(1 - var(--scale))));
       transition: all var(--transition-time);
+      position: relative;
     }
 
     .app-name {
@@ -116,6 +121,10 @@ function runApp(app: AppInfo) {
       backdrop-filter: blur(20px);
       transform: translateX(-50%);
       pointer-events: none;
+    }
+    .running-dot {
+      bottom: calc(-3px * var(--scale));
+      background-color: hsl(0, 0%, 71%);
     }
 
     &:hover {

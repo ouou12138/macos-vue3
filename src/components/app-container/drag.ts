@@ -187,7 +187,7 @@ class Drag {
     el.removeEventListener(event, hanlder, params)
   }
   private getRealOffset(target: number, min: number, max: number) {
-    if (min > 0 && target < min) {
+    if (min >= 0 && target < min) {
       return min
     } else if (max > 0 && target > max) {
       return max
@@ -277,7 +277,7 @@ class Drag {
     const { windowInfo, desktopArea, titleContainerHeight } = this
     windowInfo.y = Math.min(
       desktopArea.height -
-        titleContainerHeight -
+        (titleContainerHeight || 40) -
         desktopArea.statusbarHeight -
         desktopArea.dockHeight,
       windowInfo.y

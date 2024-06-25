@@ -118,6 +118,7 @@ function hideMenu() {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   background-color: rgba($color: #000000, $alpha: 0.3);
+  z-index: 2001;
   .apple-menu,
   .apple-status {
     width: 100%;

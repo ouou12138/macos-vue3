@@ -1,11 +1,11 @@
 import { useDockStore } from './DockStore'
+const scale = 0.8
 export const hoverDockItem = function (e: MouseEvent, hoverable: boolean = true): void {
   if (!hoverable) {
     document.addEventListener('click', listenWindowClick)
     return
   }
   //base scale rate
-  const scale = 0.8
 
   const item = e.target as HTMLElement
   const itemRect = item.getBoundingClientRect()
