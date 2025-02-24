@@ -1,24 +1,11 @@
 <template>
-  <div
-    class="app"
-    :class="{ active: props.active }"
-    v-show="hide"
-    :style="{ ...drag.moveResult.value }"
-    @click="clickApp"
-  >
+  <div class="app" :class="{ active: props.active }" v-show="hide" :style="{ ...drag.moveResult.value }"
+    @mousedown="clickApp">
     <div class="app-container" style="{'user-select':'none'}">
-      <span
-        v-for="dire in drag.Directions"
-        :key="dire"
-        :class="['resize-hanlder', 'resize-' + dire]"
-        @mousedown="drag.dragResize($event, dire)"
-      ></span>
-      <div
-        class="nav-bar"
-        v-show="props.showNav"
-        @mousedown="drag.dragMove($event)"
-        @dblclick.stop="drag.dbclickResize"
-      >
+      <span v-for="dire in drag.Directions" :key="dire" :class="['resize-hanlder', 'resize-' + dire]"
+        @mousedown="drag.dragResize($event, dire)"></span>
+      <div class="nav-bar" v-show="props.showNav" @mousedown="drag.dragMove($event)"
+        @dblclick.stop="drag.dbclickResize">
         <div class="control-container">
           <div class="controller close" @click.stop="closeApp"></div>
           <div class="controller minimize" @click.stop="minimizeApp"></div>
@@ -30,15 +17,9 @@
           </slot>
         </div>
       </div>
-      <div
-        class="absolute top-1px left-1px right-1px bottom-1px"
-        v-show="drag.isResizing.value || drag.isDraging.value"
-      ></div>
-      <div
-        class="sub-app"
-        :style="{ height: appContentHeight + 'px' }"
-        @mousedown="drag.dragMove($event)"
-      >
+      <div class="absolute top-1px left-1px right-1px bottom-1px"
+        v-show="drag.isResizing.value || drag.isDraging.value"></div>
+      <div class="sub-app" :style="{ height: appContentHeight + 'px' }" @mousedown="drag.dragMove($event)">
         <div class="control-container" v-if="!props.showNav">
           <div class="controller close" @click.stop="closeApp"></div>
           <div class="controller minimize" @click.stop="minimizeApp"></div>
@@ -176,6 +157,7 @@ onMounted(() => {
 .app.active {
   z-index: 2000;
   box-shadow: 5px 20px 40px -5px rgba($color: #000, $alpha: 0.7);
+
   .controller {
     &::after {
       visibility: visible !important;
@@ -237,6 +219,7 @@ onMounted(() => {
 
       &.close {
         background-color: rgb(249, 69, 69);
+
         &::after {
           content: '\e8dd';
         }
@@ -244,6 +227,7 @@ onMounted(() => {
 
       &.minimize {
         background-color: rgb(252, 175, 36);
+
         &::after {
           content: '\e97f';
         }
@@ -251,6 +235,7 @@ onMounted(() => {
 
       &.maximize {
         background-color: rgb(40, 162, 49);
+
         &::after {
           content: '\e8e6';
           transform: rotateZ(45deg);
@@ -287,6 +272,7 @@ onMounted(() => {
   position: relative;
   box-sizing: border-box;
   overflow: hidden;
+
   .control-container {
     position: absolute;
     height: fit-content;

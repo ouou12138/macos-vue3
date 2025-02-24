@@ -64,7 +64,7 @@ const apps: AppInfo[] = [
     key: 'launchpad',
     appId: nanoid(16),
     render: () => {
-      ;(window as any).switchLaunchpad()
+      window.switchLaunchpad()
     },
     menus: []
   },

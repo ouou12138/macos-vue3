@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid'
 import apps from '@/data/apps'
 import Desktop from '@/components/desktop/desktop.vue'
 import appContainer from '@/components/app-container/app-container.vue'
-import { render, type VNode } from 'vue'
+import { type VNode } from 'vue'
 
 type QueueItem = {
   runningId: string
@@ -57,7 +57,7 @@ export const runApp = async <T = Record<string, any>>(APP_KEY: string, props?: T
       appName: appDefine.name,
       ...(appDefine.window_config || {})
     },
-    h(appComp, props || {})
+    () => h(appComp, props || {})
   )
 
   setQueue(appDefine.appId, { runningId, vnode: appWrapper })

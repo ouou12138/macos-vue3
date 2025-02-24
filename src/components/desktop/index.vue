@@ -6,7 +6,6 @@ import BgImage from '@/assets/background/light.jpg'
 import Launchpad from '../launchpad/launchpad.vue'
 import { activeApp, initDesktop } from '@/hook/useRunApp'
 import { runningQueue } from '@/hook/useRunApp'
-import AppContainer from '../app-container/app-container.vue'
 
 const bgImage = ref(`url(${BgImage})`)
 
@@ -17,34 +16,23 @@ const runningApps = computed(() => {
   return Array.from(queue)
 })
 
+document.addEventListener("contextmenu", (e) => {
+  e.preventDefault()
+})
+
 onMounted(() => {
-  console.log(desktop.value, 'desktop')
   initDesktop(desktop.value!)
 })
-onMounted(() => {
-  // useRunApp('launchpad', { bg: bgImage.value })
-})
+
 </script>
 
 <template>
   <div id="desktop">
     <StatusBar></StatusBar>
     <DesktopVue ref="desktop">
-      <!-- <AppContainer
-        :minSize="{ width: 400, height: 600 }"
-        :maxSize="{ width: 400, height: 600 }"
-        appName="哔哩哔哩"
-      >
-        <iframe width="100%" height="100%" src="https://www.bilibili.com/" frameborder="0"></iframe>
-      </AppContainer> -->
-
       <Launchpad :bg="bgImage"></Launchpad>
-      <component
-        v-for="app in runningApps"
-        :key="app.runningId"
-        :active="app.runningId === activeApp"
-        :is="app.vnode"
-      ></component>
+      <component v-for="app in runningApps" :key="app.runningId" :active="app.runningId === activeApp" :is="app.vnode">
+      </component>
     </DesktopVue>
     <Dock></Dock>
   </div>
