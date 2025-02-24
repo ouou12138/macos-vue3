@@ -32,8 +32,10 @@
 </template>
 
 <script lang="ts" setup>
-import { getQueue, setQueue, removeQueue, setActiveApp } from '@/hook/useRunApp'
+import { useRunApp } from '@/hook/useRunApp'
 import Drag from './drag'
+
+const { getQueue, removeQueue, setActiveApp, setQueue } = useRunApp()
 
 type SizeLimition = {
   width: number
@@ -65,13 +67,12 @@ const props = withDefaults(
 )
 
 const appContentHeight = computed(() => {
-  console.log(!props.showNav)
-
   return !props.showNav ? drag.windowInfo.h : drag.windowInfo.h - titleContainerHeight.value
 })
 
 const runningApp = getQueue(props.appId!)!
 
+provide('runningId', props.runningId)
 provide('isActive', props.active)
 provide('closeApp', closeApp)
 provide('minimizeApp', minimizeApp)

@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@b52405/webterminal": "^1.2.2",
     "animate.css": "^4.1.1",
     "dayjs": "^1.11.11",
     "nanoid": "^5.0.7",

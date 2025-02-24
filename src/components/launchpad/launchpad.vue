@@ -1,22 +1,13 @@
 <template>
   <div class="launchpad" v-show="show" :class="animateName" @click="switchLaunchpad">
     <div class="animate-container w-full h-full" :class="animateName">
-      <swiper
-        class="w-full h-full"
-        :slides-per-view="1"
-        :modules="[Pagination]"
+      <swiper class="w-full h-full" :slides-per-view="1" :modules="[Pagination]"
         :pagination="{ clickable: true, bulletActiveClass: 'bullet-active' }"
-        style="--swiper-pagination-bottom: 100px; --swiper-pagination-bullet-inactive-opacity: 0.8"
-      >
+        style="--swiper-pagination-bottom: 100px; --swiper-pagination-bullet-inactive-opacity: 0.8">
         <swiper-slide v-for="(list, index) in appsList" :key="index">
           <div class="w-full h-full flex items-center justify-center">
             <div class="app-copntianer">
-              <div
-                class="app-item flex-shrink-0"
-                v-for="app in list"
-                :key="app.appId"
-                @click="runApp(app)"
-              >
+              <div class="app-item flex-shrink-0" v-for="app in list" :key="app.appId" @click="runApp(app)">
                 <div class="logo">
                   <img class="w-full object-cover" :src="app.icon" alt="" />
                 </div>
@@ -34,7 +25,7 @@
 import apps, { type AppInfo } from '@/data/apps'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
-import { runApp as useRunApp } from '@/hook/useRunApp'
+import { useRunApp } from '@/hook/useRunApp'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
@@ -47,6 +38,7 @@ const newApps: typeof apps = []
 newApps.push(...apps, ...apps, ...apps, ...apps)
 
 const appsList = clipAppsPages(newApps)
+const { runApp: _runApp } = useRunApp()
 
 const animateName = ref('fadeIn')
 
@@ -64,22 +56,22 @@ function clipAppsPages(aList: typeof apps) {
 async function switchLaunchpad() {
   show.value = !show.value
     ? (() => {
-        animateName.value = 'fadeIn'
-        return true
-      })()
+      animateName.value = 'fadeIn'
+      return true
+    })()
     : await (() => {
-        return new Promise((resolve) => {
-          animateName.value = 'fadeOut'
-          setTimeout(() => resolve(false), 200)
-        })
-      })()
+      return new Promise((resolve) => {
+        animateName.value = 'fadeOut'
+        setTimeout(() => resolve(false), 200)
+      })
+    })()
 }
 function runApp(app: AppInfo) {
   if (app.render) {
     app.render()
     return
   }
-  useRunApp(app.key)
+  _runApp(app.key)
 }
 
 window.switchLaunchpad = switchLaunchpad
@@ -104,6 +96,7 @@ defineExpose({
   overflow: hidden;
   display: flex;
   align-items: center;
+
   &::after {
     content: '';
     display: block;
@@ -115,15 +108,18 @@ defineExpose({
     height: 100%;
     background-color: rgba($color: black, $alpha: 0.5);
   }
+
   &.fadeIn {
     animation: fadeIn 200ms;
     animation-fill-mode: forwards;
   }
+
   &.fadeOut {
     animation: fadeOut 200ms;
     animation-fill-mode: forwards;
   }
 }
+
 .app-copntianer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -132,6 +128,7 @@ defineExpose({
   height: 70%;
   margin: 0 auto;
   text-align: center;
+
   .app-item {
     width: 100%;
     max-width: 128px;
@@ -140,11 +137,13 @@ defineExpose({
     align-items: center;
     justify-content: center;
     position: relative;
+
     .logo {
       display: block;
       position: relative;
       width: 100%;
     }
+
     &:active {
       .logo::after {
         content: '';
@@ -160,51 +159,62 @@ defineExpose({
     }
   }
 }
+
 .animate-container {
   transform: scale(1.5);
   opacity: 0;
   animation-timing-function: ease-in;
 }
+
 .animate-container.fadeOut {
   animation: FadeZoomOut 200ms;
   animation-fill-mode: forwards;
 }
+
 .animate-container.fadeIn {
   animation: FadeZoomIn 200ms;
   animation-fill-mode: forwards;
 }
+
 @keyframes FadeZoomIn {
   0% {
     transform: scale(1.1);
     opacity: 0;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
   }
 }
+
 @keyframes FadeZoomOut {
   0% {
     transform: scale(1);
     opacity: 1;
   }
+
   100% {
     transform: scale(1.1);
     opacity: 0;
   }
 }
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
 }
+
 @keyframes fadeOut {
   0% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
@@ -215,6 +225,7 @@ defineExpose({
 .bullet-active {
   background-color: white;
 }
+
 .launchpad .swiper-pagination-horizontal {
   width: fit-content;
   left: 50%;

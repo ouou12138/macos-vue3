@@ -1,14 +1,14 @@
 <template>
   <div class="status-bar">
     <div class="apple-menu">
-      <div
-        class="menu-item"
-        :class="{ active: store.focus && store.currentItem == index }"
-        v-for="(item, index) in store.menus"
-        :key="item.title"
-        @click.stop="showMenu($event, index, item.options)"
-        @mouseover="hoverShowMenu($event, index, item.options)"
-      >
+      <div class="menu-item" :class="{ active: store.focus && store.currentItem == 0 }"
+        @click.stop="showMenu($event, 0, defaultMenuItem.menus)"
+        @mouseover="hoverShowMenu($event, 0, defaultMenuItem.menus)">
+        <i class="icon iconfont" :class="[defaultMenuItem.title]"></i>
+      </div>
+      <div class="menu-item" :class="{ active: store.focus && store.currentItem == (index + 1) }"
+        v-for="(item, index) in store.menuList" :key="item.title" @click.stop="showMenu($event, index + 1, item.menus)"
+        @mouseover="hoverShowMenu($event, index + 1, item.menus)">
         <i v-if="item.titleTypes == 'icon'" class="icon iconfont" :class="[item.title]"></i>
         <span v-else>{{ item.title }}</span>
       </div>
@@ -29,30 +29,13 @@
       <div class="status-item">{{ time }}</div>
     </div>
   </div>
-  <div
-    class="menu"
-    v-if="store.focus"
-    :style="{ left: menuPosition.x + 'px', top: menuPosition.y + 'px' }"
-    @click.stop="() => null"
-  >
-    <div class="group" v-for="(group, index) in store.options" :key="'g' + index">
-      <div class="menu-item" v-for="item in group" :key="item.title" @click.stop="item.event">
+  <div class="menu" v-if="store.focus" :style="{ left: menuPosition.x + 'px', top: menuPosition.y + 'px' }"
+    @click.stop="() => null">
+    <div class="group" v-for="(group, index) in store.menus" :key="'g' + index">
+      <div class="menu-item" v-for="item in group" :key="item.title" @click.stop="">
         {{ item.title }}
       </div>
     </div>
-    <!-- <div class="group">
-            <div class="menu-item">关于本机</div>
-        </div>
-        <div class="group">
-            <div class="menu-item">系统偏好设置</div>
-        </div>
-        <div class="group">
-            <div class="menu-item">重启本机</div>
-            <div class="menu-item">关机</div>
-        </div>
-        <div class="group">
-            <div class="menu-item">退出登陆</div>
-        </div>-->
   </div>
 </template>
 
@@ -60,6 +43,7 @@
 import { ref, reactive } from 'vue'
 import { useStore } from './store'
 import dayjs from 'dayjs'
+import { defaultMenuItem } from './defaultMenuItem'
 
 const store = useStore()
 
@@ -82,26 +66,22 @@ function getTime(): string {
 
 let menuPosition = reactive({ x: 0, y: 25 })
 
-function showMenu(e: MouseEvent, index: number, options: any) {
+function showMenu(e: MouseEvent, index: number, menus: MenuItems) {
   store.focus ? store.switchStatusBar(false) : store.switchStatusBar(true)
-  store.clickMenuItem(index, options)
+  store.clickMenuItem(index, menus)
   menuPosition.x = e.pageX - e.offsetX
   document.addEventListener('click', hideMenu)
 }
-function hoverShowMenu(e: MouseEvent, index: number, options: any) {
+function hoverShowMenu(e: MouseEvent, index: number, menus: MenuItems) {
   if (!store.focus || index === store.currentItem) return
-  store.clickMenuItem(index, options)
+  store.clickMenuItem(index, menus)
   menuPosition.x = e.pageX - e.offsetX
-  // document.addEventListener('click',hideMenu)
 }
 function hideMenu() {
   store.switchStatusBar(false)
   document.removeEventListener('click', hideMenu)
 }
 
-// function clickMenuItem(e:MouseEvent){
-//      store.clickMenuItem(index,item.options)
-// }
 </script>
 
 <style lang="scss" scoped>
@@ -119,12 +99,14 @@ function hideMenu() {
   -webkit-backdrop-filter: blur(20px);
   background-color: rgba($color: #000000, $alpha: 0.3);
   z-index: 2001;
+
   .apple-menu,
   .apple-status {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
+
     .menu-item,
     .status-item {
       display: flex;
@@ -135,9 +117,11 @@ function hideMenu() {
       padding: 0 16px;
       align-items: center;
       border-radius: 3px;
+
       &.active {
         background-color: rgba($color: white, $alpha: 0.3);
       }
+
       .icon {
         font-size: 16px;
         font-weight: bold;
@@ -145,13 +129,16 @@ function hideMenu() {
       }
     }
   }
+
   .apple-status {
     justify-content: flex-end;
+
     .status-item {
       padding: 0 12px;
     }
   }
 }
+
 .menu {
   min-width: 200px;
   background-color: rgba($color: white, $alpha: 0.6);
@@ -163,19 +150,23 @@ function hideMenu() {
   padding: 0 5px;
   z-index: 1999;
   border: 1px solid #ddd;
+
   .group {
     padding: 5px 0;
     margin: 0 8px;
     border-bottom: 1px solid rgba($color: #ccc, $alpha: 0.8);
+
     &:nth-last-child(1) {
       border: none;
     }
   }
+
   .menu-item {
     // width: 100%;
     margin: 0 -8px;
     padding: 3px 8px;
     user-select: none;
+
     &:hover {
       background-color: rgb(10, 96, 255);
       border-radius: 6px;
