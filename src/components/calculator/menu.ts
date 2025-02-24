@@ -16,4 +16,4 @@ export default [
       ]
     ]
   }
-] as const as MenuList
+] as MenuList
