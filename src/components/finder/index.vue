@@ -3,19 +3,11 @@
     <div class="side-bar w-208px h-full flex flex-col">
       <div class="placeholder h-55px"></div>
       <div class="px-16px overflow-auto h-fit flex-1" @mousedown.stop="() => null">
-        <div
-          v-for="(category, index) in sideBarData"
-          :key="index"
-          class="not-first-of-type-pt-3 category"
-        >
+        <div v-for="(category, index) in sideBarData" :key="index" class="not-first-of-type-pt-3 category">
           <div class="text-2.5 text-#666">{{ category.category }}</div>
           <ul class="items list-none m-0 text-3.25">
-            <li
-              v-for="(item, index) in category.items"
-              :key="index"
-              :class="{ active: activeName === item.name }"
-              @click="() => (activeName = item.name)"
-            >
+            <li v-for="(item, index) in category.items" :key="index" :class="{ active: activeName === item.name }"
+              @click="() => (activeName = item.name)">
               <p class="icon"></p>
               {{ item.name }}
             </li>
@@ -88,15 +80,18 @@ const activeName = ref('最近使用')
   .category:nth-last-of-type() {
     padding-top: 20px;
   }
+
   .items {
     padding-left: 0;
     color: #333;
+
     li {
       padding: 3px 5px;
       display: flex;
       align-items: center;
       height: 20px;
       margin: 2px 0;
+
       .icon {
         width: 12px;
         height: 12px;
@@ -104,6 +99,7 @@ const activeName = ref('最近使用')
         border-radius: 5px;
         margin-right: 5px;
       }
+
       &.active {
         background-color: rgba($color: #c8cbd0, $alpha: 0.6);
         border-radius: 5px;

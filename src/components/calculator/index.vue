@@ -4,18 +4,12 @@
       {{ displayNum }}
     </div>
     <div class="keyboard" @mousedown.stop>
-      <div
-        class="key text-5"
-        :class="{
-          'grid-col-span-2': key === '0',
-          normal: !yellowKeys.includes(key) && !specKeys.includes(key),
-          'bg-#FF9F0A': yellowKeys.includes(key),
-          'bg-#fff/15': specKeys.includes(key)
-        }"
-        v-for="key in inputKeys"
-        :key="key"
-        @click="clickKey(key)"
-      >
+      <div class="key text-5" :class="{
+        'grid-col-span-2': key === '0',
+        normal: !yellowKeys.includes(key) && !specKeys.includes(key),
+        'bg-#FF9F0A': yellowKeys.includes(key),
+        'bg-#fff/15': specKeys.includes(key)
+      }" v-for="key in inputKeys" :key="key" @click="clickKey(key)">
         {{ key }}
       </div>
     </div>
@@ -23,6 +17,9 @@
 </template>
 
 <script setup lang="ts">
+// import useMenu from '@/hook/useMenu';
+// import menu from './menu';
+
 const screen = ref<HTMLDivElement | null>()
 let screenWidth = 200
 const screentFontSize = ref(48)
@@ -63,6 +60,12 @@ watch(isAC, () => {
     inputKeys.value[0] = 'C'
   }
 })
+
+// const runningId = inject<string>('runningId')
+
+// const { setMenu } = useMenu()
+
+// setMenu(runningId!, menu)
 
 const renderDisplayNum = (input?: string) => {
   displayNum.value = input === 'Infinity' ? '不是数字' : input || '0'
@@ -172,6 +175,7 @@ onMounted(() => {
   flex-direction: column;
   height: inherit;
 }
+
 .screen {
   height: 80px;
   font-size: 48px;
@@ -187,6 +191,7 @@ onMounted(() => {
   pointer-events: none;
   user-select: none;
 }
+
 .keyboard {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -195,13 +200,16 @@ onMounted(() => {
   color: white;
   gap: 1px;
 }
+
 .key {
   display: flex;
   justify-content: center;
   align-items: center;
+
   &.normal {
     background-color: rgba($color: #eee, $alpha: 0.28);
   }
+
   &:active {
     background-color: rgba($color: #eee, $alpha: 0.68);
   }

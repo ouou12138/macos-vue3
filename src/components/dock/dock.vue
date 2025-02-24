@@ -2,9 +2,11 @@
 import { hoverDockItem, hoverDockItemLeave } from './hover'
 import { useDockStore } from './DockStore'
 import { type AppInfo } from '@/data/apps'
-import { runApp as useRunApp, runningQueue } from '@/hook/useRunApp'
+import { useRunApp, runningQueue } from '@/hook/useRunApp'
 
 const dockApp = useDockStore()
+
+const { runApp: _runApp } = useRunApp()
 
 const menuLeft = ref(0)
 
@@ -37,28 +39,19 @@ function runApp(app: AppInfo) {
     app.render()
     return
   }
-  useRunApp(app.key)
+  _runApp(app.key)
 }
 </script>
 
 <template>
   <div class="dock">
-    <div
-      class="dock-item"
-      @click="runApp(item)"
-      @mousemove="hoverDockItem($event, dockApp.hoverable)"
-      :data-index="index"
-      @mouseleave="hoverDockItemLeave(dockApp.hoverable)"
-      @contextmenu.prevent="rightClickDockItem($event, index)"
-      v-for="(item, index) in dockApp.apps"
-      :key="item.appId"
-    >
+    <div class="dock-item" @click="runApp(item)" @mousemove="hoverDockItem($event, dockApp.hoverable)"
+      :data-index="index" @mouseleave="hoverDockItemLeave(dockApp.hoverable)"
+      @contextmenu.prevent="rightClickDockItem($event, index)" v-for="(item, index) in dockApp.apps" :key="item.appId">
       <div class="logo">
         <img class="w-full h-full" :src="item.icon" alt="icons" />
-        <p
-          class="running-dot m-0 w-5px h-5px rounded absolute left-50% translate-x--50% pointer-events-none"
-          v-show="runningQueue.has(item.appId)"
-        ></p>
+        <p class="running-dot m-0 w-5px h-5px rounded absolute left-50% translate-x--50% pointer-events-none"
+          v-show="runningQueue.has(item.appId)"></p>
       </div>
       <div class="app-name" v-show="!dockApp.showMenu">{{ item.name }}</div>
     </div>
@@ -122,6 +115,7 @@ function runApp(app: AppInfo) {
       transform: translateX(-50%);
       pointer-events: none;
     }
+
     .running-dot {
       bottom: calc(-3px * var(--scale));
       background-color: hsl(0, 0%, 71%);
@@ -132,6 +126,7 @@ function runApp(app: AppInfo) {
         display: block;
       }
     }
+
     &:active {
       .logo::after {
         content: '';
@@ -159,10 +154,12 @@ function runApp(app: AppInfo) {
   z-index: 1999;
   border: 1px solid #ddd;
   bottom: 90px;
+
   .group {
     padding: 5px 0;
     margin: 0 8px;
     border-bottom: 1px solid rgba($color: #ccc, $alpha: 0.8);
+
     &:nth-last-child(1) {
       border: none;
     }
@@ -172,6 +169,7 @@ function runApp(app: AppInfo) {
     margin: 0 -8px;
     padding: 3px 8px;
     user-select: none;
+
     &:hover {
       background-color: rgb(10, 96, 255);
       border-radius: 6px;
